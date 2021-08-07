@@ -1,4 +1,5 @@
 import sys
+from os.path import exists
 from typing import Dict, List, Any
 
 
@@ -32,19 +33,6 @@ def root_id(sentenceid, bases):
         return root_id(bases[sentenceid], bases)
 
 
-# Drop in replacement for a file, used for unit testing.
-class FakeFile:
-    def __init__(self, contents):
-        self.data = contents
-
-    # Adds the string to the list of lines.
-    def write(self, string: str):
-        if not self.data:
-            self.data = [string]
-        else:
-            self.data += [string]
-
-
 # Generates parallel corpora from a dictionary of sentence bases, a list of lines from a Tatoeba sentences.csv,
 # and two ISO 639-2 (3-letter) language codes, and writes them to the two specified files (or fake files for unit tests)
 def convert(basemap: Dict[any, any], sentencelines: List[str], lang1: str, lang2: str, lang1file, lang2file):
@@ -65,33 +53,20 @@ def convert(basemap: Dict[any, any], sentencelines: List[str], lang1: str, lang2
             if root in sentenceforms:
                 # We've seen this sentence before. Checks to ensure it was in the other language.
                 if sentenceforms[root][0] != row[1]:
-                    # Checks to see which language the second instance of the sentence is in.
-                    if row[1] == lang1:
-                        # Saves the sentence and saved sentence to file since we've already seen this sentence in lang2.
-                        if firstline:
-                            # This is the first line, so there's no need to add line breaks.
-                            lang1file.write(row[2])
-                            lang2file.write(sentenceforms[root][1])
-
-                            # As the first line is read, we want line breaks in all future lines.
-                            firstline = False
-                        else:
-                            # This isn't the first line, adds line breaks before each respective sentence.
-                            lang1file.write('\n' + row[2])
-                            lang2file.write('\n' + sentenceforms[root][1])
+                    # Unless it's the first line, add a line break to both files.
+                    if firstline:
+                        firstline = False
                     else:
-                        # Saves the sentence and saved sentence to file since we've already seen this sentence in lang1.
-                        if firstline:
-                            # This is the first line, so there's no need to add line breaks.
-                            lang2file.write(row[2])
-                            lang1file.write(sentenceforms[root][1])
+                        lang1file.write('\n')
+                        lang2file.write('\n')
 
-                            # As the first line is read, we want line breaks in all future lines.
-                            firstline = False
-                        else:
-                            # This isn't the first line, adds line breaks before each respective sentence.
-                            lang2file.write('\n' + row[2])
-                            lang1file.write('\n' + sentenceforms[root][1])
+                    # Checks to see which language the second instance of the sentence is in and writes to both files.
+                    if row[1] == lang1:
+                        lang1file.write(row[2])
+                        lang2file.write(sentenceforms[root][1])
+                    else:
+                        lang2file.write(row[2])
+                        lang1file.write(sentenceforms[root][1])
             else:
                 # Puts this form of the sentence (language, sentence) in the dictionary for its base form
                 # in case it exists in the other specified language.
@@ -100,12 +75,15 @@ def convert(basemap: Dict[any, any], sentencelines: List[str], lang1: str, lang2
 
 
 def main():
-    # Ensures the argument length is appropriate.
+    # Proper syntax for the program. Used both in the help page and in argument errors.
+    syntax = "tatopeel [sentencefile] [basefile] [lang1] [lang2]\n", \
+             "example: tatopeel sentences.csv bases.csv eng spa\n", \
+             "Please use extracted CSV files from tatoeba.org/downloads and ISO 639-2 (3-letter) language codes. "
+
+    # Help page (tatopeel help). Also ensures the argument length is appropriate.
     if len(sys.argv) != 5:
-        # Invalid arguments. Shows the user the appropriate args and exits the program.
-        print("tatopeel [sentencefile] [basefile] [lang1] [lang2]", "example: tatopeel sentences.csv bases.csv eng spa",
-              "Please use extracted CSV files from tatoeba.org/downloads and ISO 639-2 (3-letter) language codes.",
-              sep='\n')
+        # Invalid arguments. Shows the user the appropriate arguments and exits the program.
+        print(syntax)
         quit()
 
     # Stores arguments to readable variables
@@ -117,15 +95,18 @@ def main():
     # Reads the bases from the bases file into a dict
     bases = read_bases(basefile)
 
+    if not exists(sentencefile):
+        print("Invalid sentence file. You can find one on tatoeba.org/downloads.\n", "Proper syntax: " + syntax)
+
+    if not exists(basefile):
+        print("Invalid bases file. You can find one on tatoeba.org/downloads.\n", "Proper syntax: " + syntax)
+
     # Opens the sentences file and opens (or creates) the 2 parallel corpus files.
     with open(sentencefile, newline='', encoding="utf-8") as sfile, \
             open(lang1 + '.txt', 'w', encoding="utf-8") as lang1file, \
             open(lang2 + '.txt', 'w', encoding="utf-8") as lang2file:
-
         # Reads the lines of the sentence file into a list.
         lines: List[str] = sfile.readlines()
 
         # Creates parallel corpora from the bases/sentences and outputs them to the two files.
         convert(bases, lines, lang1, lang2, lang1file, lang2file)
-
-

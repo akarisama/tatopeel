@@ -4,7 +4,7 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
@@ -12,6 +12,7 @@ setup(
     version='1.0',
     description='Converts Tatoeba base and sentences files into line delineated parallel corpora for use in deep learning machine translation applications.',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/n-win/tatopeel',
     author='Noah Windsor',
     author_email='mail@nwin.me',

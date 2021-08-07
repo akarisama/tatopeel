@@ -1,9 +1,21 @@
 import unittest
 import logging
 import tatopeel
-from tatopeel import FakeFile
 
 logging.basicConfig(level=logging.DEBUG)
+
+
+# Drop in replacement for a file, used for unit testing.
+class FakeFile:
+    def __init__(self, contents):
+        self.data = contents
+
+    # Adds the string to the list of lines.
+    def write(self, string: str):
+        if not self.data:
+            self.data = [string]
+        else:
+            self.data += [string]
 
 
 class TatoTest(unittest.TestCase):
@@ -34,9 +46,6 @@ class TatoTest(unittest.TestCase):
         lines = ['1	eng	Cat', '2	jpn	猫']
 
         tatopeel.convert(bases, lines, 'eng', 'jpn', lang1ff, lang2ff)
-
-        print(lang1ff.data)
-        print(lang2ff.data)
 
         self.assertEqual(lang1ff.data, ['Cat'])
         self.assertEqual(lang2ff.data, ['猫'])
