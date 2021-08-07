@@ -26,7 +26,7 @@ setup(
         'Topic :: Software Development :: Pre-processors',
     ],
     keywords='tatoeba corpus conversion',
-    py_modules='tatopeel',
+    py_modules=['tatopeel'],
     entry_points={
         'console_scripts': [
             'tatopeel=tatopeel:main',
