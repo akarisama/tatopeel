@@ -76,9 +76,9 @@ def convert(basemap: Dict[any, any], sentencelines: List[str], lang1: str, lang2
 
 def main():
     # Proper syntax for the program. Used both in the help page and in argument errors.
-    syntax = "tatopeel [sentencefile] [basefile] [lang1] [lang2]\n", \
-             "example: tatopeel sentences.csv bases.csv eng spa\n", \
-             "Please use extracted CSV files from tatoeba.org/downloads and ISO 639-2 (3-letter) language codes. "
+    syntax = "tatopeel [sentencefile] [basefile] [lang1] [lang2]\n" \
+             "example: tatopeel sentences.csv bases.csv eng spa\n" \
+             "Please use extracted CSV files from tatoeba.org/downloads and ISO 639-2 (3-letter) language codes."
 
     # Help page (tatopeel help). Also ensures the argument length is appropriate.
     if len(sys.argv) != 5:
@@ -96,10 +96,10 @@ def main():
     bases = read_bases(basefile)
 
     if not exists(sentencefile):
-        print("Invalid sentence file. You can find one on tatoeba.org/downloads.\n", "Proper syntax: " + syntax)
+        print("Invalid sentence file. You can find one on tatoeba.org/downloads.\n", "Proper syntax: ", syntax)
 
     if not exists(basefile):
-        print("Invalid bases file. You can find one on tatoeba.org/downloads.\n", "Proper syntax: " + syntax)
+        print("Invalid bases file. You can find one on tatoeba.org/downloads.\n", "Proper syntax: ", syntax)
 
     # Opens the sentences file and opens (or creates) the 2 parallel corpus files.
     with open(sentencefile, newline='', encoding="utf-8") as sfile, \

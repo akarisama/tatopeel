@@ -9,7 +9,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='tatopeel',
-    version='1.0',
+    version='1.1',
     description='Converts Tatoeba base and sentences files into line delineated parallel corpora for use in deep learning machine translation applications.',
     long_description=long_description,
     long_description_content_type='text/markdown',
