@@ -3,7 +3,7 @@ Converts [Tatoeba](https://tatoeba.org/) base and sentences files into line deli
 
 # Installation
 ```sh
-pip install git+https://github.com/n-win/tatopeel.git
+pip install git+https://github.com/akarisama/tatopeel.git
 ```
 
 # Usage
